@@ -84,7 +84,7 @@ export const useGameStore = defineStore('game', {
       this.changeNotice = { fromTable: from, toTable: to, gameName }
       setTimeout(() => {
         this.changeNotice = null
-      }, 3000)
+      }, 5000)
     },
 
     tickCountdowns() {

@@ -49,6 +49,11 @@ const isCurrentUserInSession = computed(() => {
   return session.value.players.some(p => p.id === store.currentUserId)
 })
 
+const hostPlayer = computed(() => {
+  if (!session.value) return undefined
+  return session.value.players.find(p => p.id === session.value.hostId)
+})
+
 const isActionDisabled = computed(() => {
   if (!session.value) return true
   return session.value.status === 'playing' || session.value.status === 'finished'
@@ -84,6 +89,27 @@ const handleAction = () => {
             <span :class="statusConfig[session.status]?.color" class="text-sm font-bold">
               {{ statusConfig[session.status]?.label }}
             </span>
+          </div>
+
+          <div class="rounded-xl bg-board-brown-light/60 p-3">
+            <p class="mb-1 text-xs text-board-cream/50">主持人</p>
+            <div class="flex items-center gap-2">
+              <div class="relative">
+                <img
+                  v-if="hostPlayer"
+                  :src="hostPlayer.avatar"
+                  :alt="hostPlayer.name"
+                  class="h-10 w-10 rounded-full object-cover ring-2 ring-board-amber"
+                />
+                <Crown class="absolute -top-1 -right-1 h-3.5 w-3.5 text-board-amber" />
+              </div>
+              <div>
+                <p class="text-sm font-bold text-board-cream">{{ hostPlayer?.name }}</p>
+                <span :class="hostPlayer ? levelConfig[hostPlayer.level]?.classes : ''" class="rounded-full px-1.5 py-0.5 text-[9px]">
+                  {{ hostPlayer ? levelConfig[hostPlayer.level]?.label : '' }}
+                </span>
+              </div>
+            </div>
           </div>
 
           <div class="space-y-1">

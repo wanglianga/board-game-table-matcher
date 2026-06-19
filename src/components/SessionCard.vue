@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { Clock, Users, Star, MapPin, BookOpen, LogOut, LogIn } from 'lucide-vue-next'
+import { Clock, Users, Star, MapPin, BookOpen, LogOut, LogIn, Crown } from 'lucide-vue-next'
 import { useGameStore } from '@/stores/gameStore'
 import type { TableSession } from '@/types'
 
@@ -40,6 +40,10 @@ const cardClasses = computed(() => {
 
 const showLeftBorder = computed(() => props.session.status === 'teaching')
 const showPulseGlow = computed(() => props.session.status === 'ready')
+
+const hostPlayer = computed(() => {
+  return props.session.players.find(p => p.id === props.session.hostId)
+})
 </script>
 
 <template>
@@ -98,6 +102,10 @@ const showPulseGlow = computed(() => props.session.status === 'ready')
             {{ formatCountdown(session.countdownSeconds) }}
           </span>
         </template>
+        <span v-if="hostPlayer" class="flex items-center gap-0.5 text-board-amber">
+          <Crown class="h-3 w-3" />
+          {{ hostPlayer.name }}
+        </span>
         <span v-if="session.needsTeaching" class="flex items-center gap-0.5 text-board-amber">
           <BookOpen class="h-3 w-3" />
           需教学
