@@ -9,11 +9,14 @@ export interface Game {
   description: string
 }
 
+export type PlayerPreference = 'firstTime' | 'socialAnxiety' | 'relaxedOnly' | 'noLongSession'
+
 export interface Player {
   id: string
   name: string
   avatar: string
   level: 'newbie' | 'casual' | 'veteran' | 'master'
+  preferences?: PlayerPreference[]
 }
 
 export interface DrinkPackage {
@@ -37,4 +40,35 @@ export interface TableSession {
   countdownSeconds: number
   drinkPackage?: DrinkPackage
   createdAt: string
+  hasTeachingHost: boolean
+  ruleWeight: 'light' | 'medium' | 'hardcore'
+  friendlyAtmosphere: boolean
+  allowSpectating: boolean
+  ruleReadingMinutes: number
+  exitImpact: string
+  tableArea: string
+  hostReady: boolean
+}
+
+export type InviteSource = 'normal' | 'friend'
+
+export interface WaitlistConflict {
+  sessionId: string
+  gameName: string
+  tableNumber: number
+  estimatedStartMinutes: number
+  tableArea: string
+  hostReady: boolean
+  inviteSource?: InviteSource
+}
+
+export type ConflictSeverity = 'low' | 'medium' | 'high'
+
+export interface ConflictWarning {
+  targetSession: WaitlistConflict
+  existingConflicts: WaitlistConflict[]
+  severity: ConflictSeverity
+  recommendation: string
+  timeConflict: boolean
+  distanceConflict: boolean
 }

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { X, Clock, Users, Star, MapPin, BookOpen, LogOut, Crown } from 'lucide-vue-next'
+import { X, Clock, Users, Star, MapPin, BookOpen, LogOut, Crown, GraduationCap, Eye, Heart, AlertTriangle, Timer, ArrowRight } from 'lucide-vue-next'
 import { useGameStore } from '@/stores/gameStore'
 import type { Player } from '@/types'
 
@@ -59,12 +59,28 @@ const isActionDisabled = computed(() => {
   return session.value.status === 'playing' || session.value.status === 'finished'
 })
 
+const isHardcore = computed(() => {
+  if (!session.value) return false
+  return store.isSessionHardcoreForCurrentUser(session.value)
+})
+
+const hasBeginnerPrefs = computed(() => store.currentPlayerPreferences.length > 0)
+
+const isFriendInvite = computed(() => session.value ? store.isFriendInvite(session.value.id) : false)
+
+const friendName = computed(() => session.value ? store.getFriendNameForSession(session.value.id) : undefined)
+
 const handleAction = () => {
   if (!session.value || isActionDisabled.value) return
   if (isCurrentUserInSession.value) {
     store.leaveSession(session.value.id)
   } else {
-    store.joinSession(session.value.id)
+    const conflict = store.checkConflictForSession(session.value.id)
+    if (conflict) {
+      store.showConflict(conflict)
+    } else {
+      store.joinSession(session.value.id)
+    }
   }
 }
 </script>
@@ -74,7 +90,7 @@ const handleAction = () => {
     <div v-if="isOpen && session" class="fixed inset-0 z-50">
       <div class="fixed inset-0 bg-black/60" @click="close" />
 
-      <div class="fixed bottom-0 left-0 right-0 animate-slide-up rounded-t-2xl bg-board-brown max-h-[70vh] overflow-y-auto">
+      <div class="fixed bottom-0 left-0 right-0 animate-slide-up rounded-t-2xl bg-board-brown max-h-[80vh] overflow-y-auto">
         <div class="flex items-center justify-between p-4 pb-2">
           <h2 class="font-serif text-lg font-bold text-board-cream">
             {{ game?.name }}
@@ -85,9 +101,67 @@ const handleAction = () => {
         </div>
 
         <div class="px-4 pb-4 space-y-4">
-          <div>
+          <div class="flex items-center gap-2">
             <span :class="statusConfig[session.status]?.color" class="text-sm font-bold">
               {{ statusConfig[session.status]?.label }}
+            </span>
+            <span
+              v-if="isFriendInvite"
+              class="flex items-center gap-1 rounded-full bg-pink-500/20 px-2 py-0.5 text-[10px] text-pink-300"
+            >
+              <Users class="h-3 w-3" />
+              {{ friendName }}邀请你
+            </span>
+          </div>
+
+          <div
+            v-if="isHardcore"
+            class="rounded-xl border border-board-wine/40 bg-board-wine/15 p-3 space-y-2"
+          >
+            <div class="flex items-center gap-2">
+              <AlertTriangle class="h-4 w-4 text-board-wine" />
+              <span class="text-sm font-bold text-board-wine">硬核桌提醒</span>
+            </div>
+            <div class="space-y-1.5 text-xs text-board-cream/80">
+              <div class="flex items-center gap-2">
+                <Timer class="h-3.5 w-3.5 text-board-amber shrink-0" />
+                <span>规则阅读约需 <span class="font-bold text-board-amber">{{ session.ruleReadingMinutes }}分钟</span></span>
+              </div>
+              <div class="flex items-center gap-2">
+                <AlertTriangle class="h-3.5 w-3.5 text-board-wine shrink-0" />
+                <span>退出影响：<span class="font-bold text-board-wine">{{ session.exitImpact }}</span></span>
+              </div>
+              <div v-if="!session.canMidExit" class="flex items-center gap-2">
+                <LogOut class="h-3.5 w-3.5 text-board-wine shrink-0" />
+                <span class="text-board-wine font-bold">本桌不允许中途退出</span>
+              </div>
+              <div v-if="!session.friendlyAtmosphere" class="flex items-center gap-2">
+                <span class="text-board-cream/60">· 气氛偏竞技，不适合轻松体验</span>
+              </div>
+            </div>
+          </div>
+
+          <div v-if="hasBeginnerPrefs && !isHardcore" class="flex items-center gap-2 flex-wrap">
+            <span
+              v-if="session.hasTeachingHost"
+              class="flex items-center gap-1 rounded-full bg-board-amber/15 px-2 py-1 text-xs text-board-amber-light"
+            >
+              <GraduationCap class="h-3.5 w-3.5" />
+              有主持教学
+            </span>
+            <span
+              v-if="session.allowSpectating"
+              class="flex items-center gap-1 rounded-full bg-blue-500/15 px-2 py-1 text-xs text-blue-300"
+            >
+              <Eye class="h-3.5 w-3.5" />
+              可先观望再决定
+            </span>
+            <span
+              v-if="session.friendlyAtmosphere"
+              class="flex items-center gap-1 rounded-full bg-pink-500/15 px-2 py-1 text-xs text-pink-300"
+            >
+              <Heart class="h-3.5 w-3.5" />
+              气氛友好
             </span>
           </div>
 
@@ -168,7 +242,7 @@ const handleAction = () => {
           <div class="space-y-2 text-xs text-board-cream/70">
             <div class="flex items-center gap-2">
               <MapPin class="h-3.5 w-3.5 text-board-amber" />
-              <span>{{ session.tableNumber }}号桌</span>
+              <span>{{ session.tableNumber }}号桌 · {{ session.tableArea }}</span>
             </div>
             <div v-if="game" class="flex items-center gap-2">
               <Clock class="h-3.5 w-3.5 text-board-amber" />
@@ -196,12 +270,19 @@ const handleAction = () => {
             :class="[
               isCurrentUserInSession
                 ? 'bg-board-wine hover:bg-board-wine-light'
-                : 'bg-board-amber hover:bg-board-amber-dark text-board-brown-dark font-bold',
+                : isHardcore
+                  ? 'bg-board-wine hover:bg-board-wine-light'
+                  : 'bg-board-amber hover:bg-board-amber-dark text-board-brown-dark font-bold',
               isActionDisabled ? 'opacity-40 cursor-not-allowed' : '',
             ]"
             class="w-full rounded-xl py-3 text-sm font-bold text-board-cream transition-colors"
           >
-            {{ isCurrentUserInSession ? '退出拼桌' : '加入拼桌' }}
+            <span v-if="isCurrentUserInSession">退出拼桌</span>
+            <span v-else-if="isHardcore" class="flex items-center justify-center gap-1">
+              <AlertTriangle class="h-4 w-4" />
+              了解风险，加入硬核桌
+            </span>
+            <span v-else>加入拼桌</span>
           </button>
         </div>
       </div>

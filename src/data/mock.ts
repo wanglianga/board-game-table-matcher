@@ -88,37 +88,43 @@ export const players: Player[] = [
     id: 'player-1',
     name: '林小风',
     avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=cartoon+avatar+%E6%9E%97%E5%B0%8F%E9%A3%8E&image_size=square_hd',
-    level: 'veteran'
+    level: 'veteran',
+    preferences: []
   },
   {
     id: 'player-2',
     name: '赵大勇',
     avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=cartoon+avatar+%E8%B5%B5%E5%A4%A7%E5%8B%87&image_size=square_hd',
-    level: 'master'
+    level: 'master',
+    preferences: []
   },
   {
     id: 'player-3',
     name: '王美丽',
     avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=cartoon+avatar+%E7%8E%8B%E7%BE%8E%E4%B8%BD&image_size=square_hd',
-    level: 'casual'
+    level: 'casual',
+    preferences: ['relaxedOnly', 'noLongSession']
   },
   {
     id: 'player-4',
     name: '陈思远',
     avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=cartoon+avatar+%E9%99%88%E6%80%9D%E8%BF%9C&image_size=square_hd',
-    level: 'newbie'
+    level: 'newbie',
+    preferences: ['firstTime', 'socialAnxiety']
   },
   {
     id: 'player-5',
     name: '张晓东',
     avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=cartoon+avatar+%E5%BC%A0%E6%99%93%E4%B8%9C&image_size=square_hd',
-    level: 'veteran'
+    level: 'veteran',
+    preferences: []
   },
   {
     id: 'player-6',
     name: '刘雨桐',
     avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=cartoon+avatar+%E5%88%98%E9%9B%A8%E6%A1%90&image_size=square_hd',
-    level: 'casual'
+    level: 'casual',
+    preferences: ['relaxedOnly']
   }
 ]
 
@@ -156,7 +162,15 @@ export const tableSessions: TableSession[] = [
     canMidExit: true,
     needsTeaching: false,
     countdownSeconds: 300,
-    createdAt: '2026-06-18T14:00:00Z'
+    createdAt: '2026-06-18T14:00:00Z',
+    hasTeachingHost: false,
+    ruleWeight: 'medium',
+    friendlyAtmosphere: true,
+    allowSpectating: true,
+    ruleReadingMinutes: 5,
+    exitImpact: '对队友影响较小，可随时退出',
+    tableArea: 'A区',
+    hostReady: true
   },
   {
     id: 'session-2',
@@ -170,7 +184,15 @@ export const tableSessions: TableSession[] = [
     canMidExit: false,
     needsTeaching: true,
     countdownSeconds: 600,
-    createdAt: '2026-06-18T14:10:00Z'
+    createdAt: '2026-06-18T14:10:00Z',
+    hasTeachingHost: true,
+    ruleWeight: 'medium',
+    friendlyAtmosphere: true,
+    allowSpectating: true,
+    ruleReadingMinutes: 10,
+    exitImpact: '中途退出会严重影响游戏平衡，不建议退出',
+    tableArea: 'A区',
+    hostReady: true
   },
   {
     id: 'session-3',
@@ -184,7 +206,15 @@ export const tableSessions: TableSession[] = [
     canMidExit: true,
     needsTeaching: false,
     countdownSeconds: 120,
-    createdAt: '2026-06-18T14:20:00Z'
+    createdAt: '2026-06-18T14:20:00Z',
+    hasTeachingHost: true,
+    ruleWeight: 'light',
+    friendlyAtmosphere: true,
+    allowSpectating: true,
+    ruleReadingMinutes: 2,
+    exitImpact: '随时退出，不影响他人',
+    tableArea: 'B区',
+    hostReady: true
   },
   {
     id: 'session-4',
@@ -198,7 +228,15 @@ export const tableSessions: TableSession[] = [
     canMidExit: false,
     needsTeaching: true,
     countdownSeconds: 120,
-    createdAt: '2026-06-18T13:50:00Z'
+    createdAt: '2026-06-18T13:50:00Z',
+    hasTeachingHost: true,
+    ruleWeight: 'medium',
+    friendlyAtmosphere: true,
+    allowSpectating: false,
+    ruleReadingMinutes: 8,
+    exitImpact: '中途退出会导致游戏无法继续',
+    tableArea: 'A区',
+    hostReady: true
   },
   {
     id: 'session-5',
@@ -212,7 +250,15 @@ export const tableSessions: TableSession[] = [
     canMidExit: false,
     needsTeaching: false,
     countdownSeconds: 60,
-    createdAt: '2026-06-18T14:05:00Z'
+    createdAt: '2026-06-18T14:05:00Z',
+    hasTeachingHost: false,
+    ruleWeight: 'light',
+    friendlyAtmosphere: true,
+    allowSpectating: true,
+    ruleReadingMinutes: 3,
+    exitImpact: '可退出但影响体验',
+    tableArea: 'B区',
+    hostReady: true
   },
   {
     id: 'session-6',
@@ -227,7 +273,15 @@ export const tableSessions: TableSession[] = [
     needsTeaching: true,
     countdownSeconds: 0,
     drinkPackage: drinkPackages[1],
-    createdAt: '2026-06-18T13:30:00Z'
+    createdAt: '2026-06-18T13:30:00Z',
+    hasTeachingHost: true,
+    ruleWeight: 'hardcore',
+    friendlyAtmosphere: false,
+    allowSpectating: false,
+    ruleReadingMinutes: 20,
+    exitImpact: '中途退出会让整局无法继续，严重影响其他玩家体验',
+    tableArea: 'C区',
+    hostReady: true
   },
   {
     id: 'session-7',
@@ -242,7 +296,15 @@ export const tableSessions: TableSession[] = [
     needsTeaching: false,
     countdownSeconds: 0,
     drinkPackage: drinkPackages[2],
-    createdAt: '2026-06-18T13:00:00Z'
+    createdAt: '2026-06-18T13:00:00Z',
+    hasTeachingHost: false,
+    ruleWeight: 'medium',
+    friendlyAtmosphere: true,
+    allowSpectating: false,
+    ruleReadingMinutes: 8,
+    exitImpact: '合作游戏，退出后难度骤增',
+    tableArea: 'B区',
+    hostReady: true
   },
   {
     id: 'session-8',
@@ -257,10 +319,22 @@ export const tableSessions: TableSession[] = [
     needsTeaching: false,
     countdownSeconds: 0,
     drinkPackage: drinkPackages[0],
-    createdAt: '2026-06-18T12:00:00Z'
+    createdAt: '2026-06-18T12:00:00Z',
+    hasTeachingHost: false,
+    ruleWeight: 'light',
+    friendlyAtmosphere: true,
+    allowSpectating: true,
+    ruleReadingMinutes: 3,
+    exitImpact: '影响较小',
+    tableArea: 'C区',
+    hostReady: true
   }
 ]
 
 export const mockGames = games
 export const mockSessions = tableSessions
 export const mockDrinkPackages = drinkPackages
+export const mockFriendInvites = [
+  { sessionId: 'session-3', friendName: '王美丽' },
+  { sessionId: 'session-6', friendName: '赵大勇' },
+]
